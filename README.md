@@ -8,6 +8,7 @@ Panel de administración centralizado para gestionar configuraciones y caracter�
 - Composer
 - Servidor web (Apache o Nginx)
 - MySQL 8
+- Extensión sodium habilitada en PHP
 
 ## Estructura inicial
 
@@ -18,5 +19,6 @@ Panel de administración centralizado para gestionar configuraciones y caracter�
 ## Próximos pasos
 
 1. Configurar autoloading vía Composer.
-2. Implementar autenticación de super admin.
-3. Integrar lectura y escritura de flags de cada tenant.
+2. Generar la clave maestra con `php -r "echo base64_encode(random_bytes(32));"` y guardarla en `config/keys/master.key` (fuera de git) o en la variable `PANEL_MASTER_KEY`.
+3. Implementar autenticación de super admin.
+4. Integrar lectura y escritura de flags de cada tenant.
