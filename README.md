@@ -12,7 +12,8 @@ Panel de administración centralizado para gestionar configuraciones y caracter�
 
 ## Estructura inicial
 
-- `public/`: punto de entrada web del panel.
+- `index.php`: punto de entrada web del panel.
+- `assets/`: recursos estáticos (css, imágenes, js).
 - `src/`: código fuente de la aplicación.
 - `config/`: archivos de configuración.
 

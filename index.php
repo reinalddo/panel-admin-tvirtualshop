@@ -2,9 +2,15 @@
 
 declare(strict_types=1);
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
-$config = require __DIR__ . '/../config/app.example.php';
+$configFile = __DIR__ . '/config/app.php';
+
+if (!is_file($configFile)) {
+    $configFile = __DIR__ . '/config/app.example.php';
+}
+
+$config = require $configFile;
 
 $app = new App\Application($config);
 
