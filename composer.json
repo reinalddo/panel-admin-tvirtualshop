@@ -1,0 +1,18 @@
+{
+    "name": "reinalddo/panel-admin-tvirtualshop",
+    "description": "Panel Master para multi-tenant TVirtualShop",
+    "type": "project",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@php -r \"file_exists('config/app.php') || copy('config/app.example.php', 'config/app.php');\""
+        ]
+    },
+    "minimum-stability": "stable",
+    "license": "proprietary"
+}
