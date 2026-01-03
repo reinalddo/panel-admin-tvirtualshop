@@ -2,6 +2,10 @@
 /** @var App\Application $app */
 /** @var array<int, array<string, mixed>> $tenants */
 /** @var array<string, mixed>|null $selectedTenant */
+/** @var array<string, array<int, array<string, mixed>>> $definitionGroups */
+/** @var array<string, string> $tenantSettings */
+/** @var string|null $message */
+/** @var string|null $error */
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -72,7 +76,10 @@
     <section style="margin-top:2rem;">
         <h2>Tenant seleccionado: <?= htmlspecialchars($selectedTenant['nombre'], ENT_QUOTES, 'UTF-8') ?></h2>
         <p>Dominio: <?= htmlspecialchars($selectedTenant['dominio'], ENT_QUOTES, 'UTF-8') ?></p>
-        <p>Próximamente aquí podrás editar configuraciones.</p>
+        <?php
+            $tenantId = (int) $selectedTenant['id'];
+            require __DIR__ . '/settings_form.php';
+        ?>
     </section>
 <?php endif; ?>
 
