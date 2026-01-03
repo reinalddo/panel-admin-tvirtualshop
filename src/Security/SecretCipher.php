@@ -10,8 +10,8 @@ class SecretCipher
 
     private function __construct(string $key)
     {
-        if (!extension_loaded('sodium')) {
-            throw new RuntimeException('La extensión sodium es requerida.');
+        if (!extension_loaded('sodium') && !function_exists('sodium_crypto_secretbox')) {
+            throw new RuntimeException('La extensión sodium o su polyfill sodium_compat es requerida.');
         }
 
         if (strlen($key) !== SODIUM_CRYPTO_SECRETBOX_KEYBYTES) {

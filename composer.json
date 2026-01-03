@@ -2,7 +2,9 @@
     "name": "reinalddo/panel-admin-tvirtualshop",
     "description": "Panel Master para multi-tenant TVirtualShop",
     "type": "project",
-    "require": {},
+    "require": {
+        "paragonie/sodium_compat": "^2.5"
+    },
     "autoload": {
         "psr-4": {
             "App\\": "src/"
