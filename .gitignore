@@ -2,5 +2,6 @@
 /.idea/
 /.vscode/
 config/keys/master.key
+config/app.php
 .env
 /public/storage/

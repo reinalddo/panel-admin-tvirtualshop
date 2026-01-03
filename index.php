@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+session_start();
+
 require __DIR__ . '/vendor/autoload.php';
 
 $configFile = __DIR__ . '/config/app.php';
@@ -14,16 +16,60 @@ $config = require $configFile;
 
 $app = new App\Application($config);
 
-?><!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title><?= htmlspecialchars($app->name(), ENT_QUOTES, 'UTF-8') ?></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/assets/css/main.css">
-</head>
-<body>
-    <h1><?= htmlspecialchars($app->name(), ENT_QUOTES, 'UTF-8') ?></h1>
-    <p>Configurador centralizado en construcción.</p>
-</body>
-</html>
+$dbConfig = $app->config('db');
+
+if (!is_array($dbConfig)) {
+    throw new \RuntimeException('Configura las credenciales de la base panel_master en config/app.php.');
+}
+
+$pdo = App\Infrastructure\Database\PdoConnectionFactory::fromConfig($dbConfig);
+$authService = new App\Auth\AuthService(new App\Auth\AdminRepository($pdo));
+$auditLogger = new App\Audit\AuditLogger($pdo);
+$tenantRepository = new App\Tenants\TenantRepository($pdo);
+
+$error = null;
+$action = $_POST['action'] ?? null;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($action === 'login') {
+        $email = trim((string) ($_POST['email'] ?? ''));
+        $password = (string) ($_POST['password'] ?? '');
+
+        if ($email === '' || $password === '') {
+            $error = 'Debes ingresar correo y contraseña.';
+        } elseif (!$authService->attempt($email, $password)) {
+            $error = 'Credenciales inválidas.';
+        } else {
+            $auditLogger->log($authService->userId(), null, 'login', ['email' => $email], $_SERVER['REMOTE_ADDR'] ?? null);
+            header('Location: /');
+            exit;
+        }
+    }
+
+    if ($action === 'logout') {
+        $adminId = $authService->userId();
+        $authService->logout();
+        $auditLogger->log($adminId, null, 'logout', [], $_SERVER['REMOTE_ADDR'] ?? null);
+        header('Location: /');
+        exit;
+    }
+}
+
+if (!$authService->check()) {
+    require __DIR__ . '/templates/login.php';
+    return;
+}
+
+$tenants = $tenantRepository->all();
+$selectedTenant = null;
+
+if (isset($_GET['tenant'])) {
+    $tenantId = (int) $_GET['tenant'];
+    $selectedTenant = $tenantRepository->find($tenantId);
+
+    if ($selectedTenant) {
+        $auditLogger->log($authService->userId(), $tenantId, 'view_tenant', ['tenant' => $tenantId], $_SERVER['REMOTE_ADDR'] ?? null);
+    }
+}
+
+require __DIR__ . '/templates/dashboard.php';
