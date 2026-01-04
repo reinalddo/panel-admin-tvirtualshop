@@ -81,6 +81,11 @@ class SecretCipher
 
     public function __destruct()
     {
-        sodium_memzero($this->key);
+        if (function_exists('sodium_memzero')) {
+            sodium_memzero($this->key);
+            return;
+        }
+
+        $this->key = str_repeat('\0', strlen($this->key));
     }
 }
