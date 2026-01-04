@@ -81,7 +81,7 @@ class SecretCipher
 
     public function __destruct()
     {
-        if (function_exists('sodium_memzero')) {
+        if (extension_loaded('sodium') && function_exists('sodium_memzero')) {
             sodium_memzero($this->key);
             return;
         }
