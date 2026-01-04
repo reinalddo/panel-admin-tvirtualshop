@@ -8,7 +8,13 @@ use App\Tenants\CredentialCipher;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$config = require __DIR__ . '/../config/app.example.php';
+$configPath = __DIR__ . '/../config/app.php';
+
+if (!is_file($configPath)) {
+    $configPath = __DIR__ . '/../config/app.example.php';
+}
+
+$config = require $configPath;
 
 $app = new Application($config);
 $cipher = new CredentialCipher($app->cipher());
